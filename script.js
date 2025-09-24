@@ -1,6 +1,6 @@
 (function () {
     // Central API base (match the running backend URL)
-    let API_BASE = 'https://atr-backend-production-1c4f.up.railway.app';
+    let API_BASE = 'https://ATr_chatgptui-Paresh007.hf.space';
     // Normalize to avoid double slashes when concatenating paths
     API_BASE = (API_BASE || '').replace(/\/+$/, '');
     const apiStatusBadge = document.getElementById('apiStatusBadge');
@@ -1069,5 +1069,6 @@
         });
     });
 })();
+
 
 
