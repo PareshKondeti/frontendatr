@@ -763,7 +763,7 @@
             if (tid) form.append('transcript_id', tid);
             const url = API_BASE + '/multiqa';
             console.log('[multiqa] POST', url);
-            const res = await fetchWithTimeout(url, { method: 'POST', body: form }, 30000);
+            const res = await fetchWithTimeout(url, { method: 'POST', body: form }, 120000);
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
             const items = data.items || [];
@@ -843,7 +843,7 @@
             if (tid) form.append('transcript_id', tid);
             const url = API_BASE + '/multiqa';
             console.log('[multiqa] POST', url);
-            const res = await fetchWithTimeout(url, { method: 'POST', body: form }, 30000);
+            const res = await fetchWithTimeout(url, { method: 'POST', body: form }, 120000);
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
             const items = data.items || [];
