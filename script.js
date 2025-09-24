@@ -1,6 +1,8 @@
 (function () {
     // Central API base (match the running backend URL)
-    const API_BASE = 'https://atr-backend-production-1c4f.up.railway.app/';
+    let API_BASE = 'https://atr-backend-production-1c4f.up.railway.app';
+    // Normalize to avoid double slashes when concatenating paths
+    API_BASE = (API_BASE || '').replace(/\/+$/, '');
     const apiStatusBadge = document.getElementById('apiStatusBadge');
     const themeToggle = document.getElementById('themeToggle');
     const ttsToggle = document.getElementById('ttsToggle');
@@ -1067,6 +1069,5 @@
         });
     });
 })();
-
 
 
