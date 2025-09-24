@@ -1,11 +1,8 @@
 (function () {
-    // Central API base (match the running backend URL)
-    let API_BASE = 'https://ATr_chatgptui-Paresh007.hf.space';
-    // Normalize to avoid double slashes when concatenating paths
-    API_BASE = (API_BASE || '').replace(/\/+$/, '');
+    // Central API base (match the running backend port)
+    const API_BASE = 'https://sensitivity-albert-eva-motherboard.trycloudflare.com';
     const apiStatusBadge = document.getElementById('apiStatusBadge');
     const themeToggle = document.getElementById('themeToggle');
-    const ttsToggle = document.getElementById('ttsToggle');
     const toastContainer = document.getElementById('toastContainer');
     // Cross-browser fetch with timeout helper
     async function fetchWithTimeout(url, options, timeoutMs) {
@@ -38,7 +35,7 @@
     // API health polling
     async function pollHealth() {
         try {
-            const res = await fetchWithTimeout(API_BASE + '/progress', { method: 'GET' }, 30000);
+            const res = await fetchWithTimeout(API_BASE + '/progress', { method: 'GET' }, 6000);
             if (res && res.ok) {
                 apiStatusBadge && (apiStatusBadge.textContent = 'Online', apiStatusBadge.className = 'badge badge--ok');
             } else {
@@ -464,7 +461,7 @@
             const form = new FormData();
             const tid = (fileSelectQa && fileSelectQa.value) || (fileSelect && fileSelect.value) || '';
             if (tid) form.append('transcript_id', tid);
-            const res = await fetchWithTimeout(API_BASE + '/summarize-latest', { method: 'POST', body: form }, 30000);
+            const res = await fetch(API_BASE + '/summarize-latest', { method: 'POST', body: form });
             const data = await res.json();
             if (res.ok) {
                 summaryBox.value = data.summary || '';
@@ -495,43 +492,10 @@
         summaryBox.value = ''; updateSummaryCount(); showToast('Cleared', 'ok');
     });
 
-    // Client-side TTS helper (SpeechSynthesis)
-    function isTtsEnabled(){
-        try { return localStorage.getItem('ttsEnabled') !== '0'; } catch(_) { return true; }
-    }
-
-    function speakText(text){
-        try {
-            if (!isTtsEnabled()) return false;
-            if (!text || !window.speechSynthesis || typeof SpeechSynthesisUtterance === 'undefined') return false;
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text);
-            u.rate = 1.0; // default speed
-            u.pitch = 1.0;
-            u.volume = 1.0;
-            window.speechSynthesis.speak(u);
-            return true;
-        } catch(_) { return false; }
-    }
-
-    // TTS toggle persistence
-    (function setupTtsToggle(){
-        if (!ttsToggle) return;
-        try {
-            const enabled = isTtsEnabled();
-            ttsToggle.checked = !!enabled;
-            ttsToggle.addEventListener('change', function(){
-                try { localStorage.setItem('ttsEnabled', this.checked ? '1' : '0'); } catch(_) {}
-                try { if (!this.checked && window.speechSynthesis) window.speechSynthesis.cancel(); } catch(_) {}
-            });
-        } catch(_) {}
-    })();
-
-    // Summary: Play via client-side TTS (fallback to backend if unavailable)
+    // Summary: Play via TTS
     summaryPlayBtn && summaryPlayBtn.addEventListener('click', async function(){
         const text = (summaryBox && summaryBox.value || '').trim();
         if (!text) return;
-        if (speakText(text)) return;
         try {
             const form = new FormData();
             form.append('text', text);
@@ -550,11 +514,10 @@
         } catch (e) { }
     });
 
-    // Multi Answer: Play via client-side TTS (fallback to backend)
+    // Multi Answer: Play via TTS
     multiAnswerPlayBtn && multiAnswerPlayBtn.addEventListener('click', async function(){
         const text = (multiCombinedAnswer && multiCombinedAnswer.value || '').trim();
         if (!text) return;
-        if (speakText(text)) return;
         try {
             const form = new FormData();
             form.append('text', text);
@@ -635,13 +598,12 @@
         const text = (target.getAttribute('data-text') || '').trim();
         if (!text) return;
         if (action === 'mini-play') {
-            if (speakText(text)) return;
-            try {
-                const form = new FormData();
+        try {
+            const form = new FormData();
                 form.append('text', text);
                 const res = await fetch(API_BASE + '/tts', { method: 'POST', body: form });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
                 if (data.audio_b64_wav) {
                     const wavBlob = b64ToBlob(data.audio_b64_wav, 'audio/wav');
                     const url = URL.createObjectURL(wavBlob);
@@ -763,7 +725,7 @@
             if (tid) form.append('transcript_id', tid);
             const url = API_BASE + '/multiqa';
             console.log('[multiqa] POST', url);
-            const res = await fetchWithTimeout(url, { method: 'POST', body: form }, 120000);
+            const res = await fetch(url, { method: 'POST', body: form });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
             const items = data.items || [];
@@ -843,7 +805,7 @@
             if (tid) form.append('transcript_id', tid);
             const url = API_BASE + '/multiqa';
             console.log('[multiqa] POST', url);
-            const res = await fetchWithTimeout(url, { method: 'POST', body: form }, 120000);
+            const res = await fetch(url, { method: 'POST', body: form });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
             const items = data.items || [];
@@ -1069,6 +1031,5 @@
         });
     });
 })();
-
 
 
