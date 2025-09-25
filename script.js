@@ -1,6 +1,6 @@
 (function () {
     // Central API base (match the running backend port)
-    const API_BASE = 'https://sensitivity-albert-eva-motherboard.trycloudflare.com';
+    const API_BASE = '@ https://partners-educated-admission-eligibility.trycloudflare.com';
     const apiStatusBadge = document.getElementById('apiStatusBadge');
     const themeToggle = document.getElementById('themeToggle');
     const toastContainer = document.getElementById('toastContainer');
@@ -1031,5 +1031,6 @@
         });
     });
 })();
+
 
 
